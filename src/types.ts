@@ -2,7 +2,7 @@ export interface ClaudeCodeConfig {
   apiKey?: string;
   claudePath?: string;
   systemPrompt?: string;
-  outputFormat?: "text" | "json" | "streaming-json";
+  outputFormat?: "text" | "json" | "stream-json";
   allowedTools?: string[];
   mcpConfig?: string;
   permissionPromptTool?: string;

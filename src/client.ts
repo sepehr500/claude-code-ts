@@ -74,6 +74,9 @@ export class ClaudeCodeClient {
 
     if (effectiveConfig.outputFormat) {
       args.push("--output-format", effectiveConfig.outputFormat);
+      if (effectiveConfig.outputFormat === "stream-json") {
+        args.push("--verbose");
+      }
     }
 
     if (effectiveConfig.systemPrompt) {
@@ -176,7 +179,7 @@ export class ClaudeCodeClient {
 
     const { command: claudeCommand, args } = this.buildCommand({
       ...options,
-      configOverrides: { outputFormat: "streaming-json" },
+      configOverrides: { outputFormat: "stream-json" },
     });
 
     const childProcess = Bun.spawn([claudeCommand, ...args], {
@@ -194,7 +197,6 @@ export class ClaudeCodeClient {
     try {
       while (true) {
         const { done, value } = await reader.read();
-        console.log({ done, value });
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
@@ -203,15 +205,31 @@ export class ClaudeCodeClient {
         for (const line of lines) {
           try {
             const parsed = JSON.parse(line);
-            yield {
-              type: parsed.type || "content",
-              data: parsed.data || parsed,
-            };
+            // Handle Claude CLI output formats
+            if (parsed.type === "assistant" && parsed.message?.content?.[0]?.text) {
+              yield {
+                type: "content",
+                data: parsed.message.content[0].text,
+              };
+            } else if (parsed.type === "result" && parsed.result) {
+              yield {
+                type: "content",
+                data: parsed.result,
+              };
+            } else {
+              yield {
+                type: parsed.type || "metadata",
+                data: parsed,
+              };
+            }
           } catch {
-            yield {
-              type: "content",
-              data: line,
-            };
+            // Raw text line
+            if (line.trim()) {
+              yield {
+                type: "content",
+                data: line,
+              };
+            }
           }
         }
       }
