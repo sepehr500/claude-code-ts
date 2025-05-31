@@ -30,11 +30,11 @@
 ### Installation
 
 ```bash
-npm install claude-code-sdk
+npm install claude-code-ts
 ```
 
 ```typescript
-import { ClaudeCodeClient } from "claude-code-sdk";
+import { ClaudeCodeClient } from "claude-code-ts";
 ```
 
 ### Prerequisites
@@ -50,7 +50,7 @@ Before using this SDK, ensure you have:
 ### Basic Usage
 
 ```typescript
-import { ClaudeCodeClient } from "claude-code-sdk";
+import { ClaudeCodeClient } from "claude-code-ts";
 
 // Initialize client
 const client = new ClaudeCodeClient();
@@ -240,7 +240,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 - 📚 [Claude Code Documentation](https://docs.claude.ai/en/docs/claude-code)
 - 💻 [GitHub Repository](https://github.com/your-org/claude-code-sdk-ts)
-- 📦 [npm Package](https://npmjs.com/package/claude-code-sdk)
+- 📦 [npm Package](https://npmjs.com/package/claude-code-ts)
 
 ---
 
