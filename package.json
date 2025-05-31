@@ -1,6 +1,6 @@
 {
   "name": "claude-code-ts",
-  "version": "0.1.1",
+  "version": "0.1.4",
   "description": "TypeScript SDK wrapper for Claude Code",
   "main": "./dist/mod.js",
   "module": "./dist/mod.js",
@@ -8,6 +8,7 @@
   "exports": {
     ".": {
       "import": "./dist/mod.js",
+      "require": "./dist/mod.js",
       "types": "./dist/mod.d.ts"
     }
   },

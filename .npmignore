@@ -1,0 +1,51 @@
+# Source files that shouldn't be published
+/src/
+mod.ts
+bun.config.ts
+tsconfig.json
+
+# Development files
+examples/
+tests/
+scripts/
+
+# Dependencies and locks
+node_modules/
+npm/
+package-lock.json
+yarn.lock
+bun.lockb
+
+# Runtime and environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git files
+.gitignore
+.git/
