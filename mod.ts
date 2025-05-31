@@ -1,3 +1,3 @@
-export * from "./src/client.ts";
-export * from "./src/types.ts";
-export * from "./src/errors.ts";
+export * from "./src/client";
+export * from "./src/types";
+export * from "./src/errors";

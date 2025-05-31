@@ -3,13 +3,13 @@ import {
   ClaudeCodeResponse,
   StreamingResponse,
   SessionInfo,
-} from "./types.ts";
+} from "./types";
 import {
   ClaudeCodeError,
   AuthenticationError,
   ConfigurationError,
   SessionError,
-} from "./errors.ts";
+} from "./errors";
 
 export class ClaudeCodeClient {
   private config: ClaudeCodeConfig;
@@ -17,7 +17,7 @@ export class ClaudeCodeClient {
 
   constructor(config: ClaudeCodeConfig = {}) {
     this.config = {
-      apiKey: config.apiKey || Deno.env.get("ANTHROPIC_API_KEY"),
+      apiKey: config.apiKey || process.env.ANTHROPIC_API_KEY,
       outputFormat: config.outputFormat || "json",
       ...config,
     };
@@ -40,11 +40,12 @@ export class ClaudeCodeClient {
   private async findClaudePath(): Promise<string> {
     // Simple fallback - just try 'claude' in PATH
     try {
-      const result = await new Deno.Command("which", {
-        args: ["claude"],
-      }).output();
-      if (result.success) {
-        return new TextDecoder().decode(result.stdout).trim();
+      const proc = Bun.spawn(["which", "claude"], {
+        stdout: "pipe",
+      });
+      const output = await new Response(proc.stdout).text();
+      if (proc.exitCode === 0) {
+        return output.trim();
       }
     } catch {
       // Ignore
@@ -95,44 +96,38 @@ export class ClaudeCodeClient {
     await this.ensureClaudePath();
     const { command, args } = this.buildCommand(options);
 
-    const denoCommand = new Deno.Command(command, {
-      args: args,
+    const childProcess = Bun.spawn([command, ...args], {
       env: {
-        ...Deno.env.toObject(),
+        ...process.env,
         ANTHROPIC_API_KEY: this.config.apiKey!,
       },
-      stdin: "null",
-      stdout: "piped",
+      stdin: "ignore",
+      stdout: "pipe",
       stderr: "inherit",
     });
 
-    const process = denoCommand.spawn();
-
     // Add timeout to prevent hanging
     const timeoutId = setTimeout(() => {
-      process.kill();
+      childProcess.kill();
     }, 60000);
 
-    let result;
+    let output: string;
     try {
-      result = await process.output();
+      output = await new Response(childProcess.stdout).text();
+      await childProcess.exited;
       clearTimeout(timeoutId);
     } catch (error) {
       clearTimeout(timeoutId);
-      process.kill();
+      childProcess.kill();
       console.error("Command failed:", error);
       throw new ClaudeCodeError(`Command failed: ${(error as Error).message}`);
     }
 
-    const { success, stdout } = result;
-
-    if (!success) {
+    if (childProcess.exitCode !== 0) {
       throw new ClaudeCodeError(
         `Command failed - check console for error details`,
       );
     }
-
-    const output = new TextDecoder().decode(stdout);
 
     if (this.config.outputFormat === "json") {
       try {
@@ -172,18 +167,16 @@ export class ClaudeCodeClient {
     const { command: claudeCommand, args } =
       this.buildCommand(streamingOptions);
 
-    const command = new Deno.Command(claudeCommand, {
-      args: args,
+    const childProcess = Bun.spawn([claudeCommand, ...args], {
       env: {
-        ...Deno.env.toObject(),
+        ...process.env,
         ANTHROPIC_API_KEY: this.config.apiKey!,
       },
-      stdout: "piped",
-      stderr: "piped",
+      stdout: "pipe",
+      stderr: "pipe",
     });
 
-    const process = command.spawn();
-    const reader = process.stdout.getReader();
+    const reader = childProcess.stdout.getReader();
     const decoder = new TextDecoder();
 
     try {
@@ -211,30 +204,28 @@ export class ClaudeCodeClient {
       }
     } finally {
       reader.releaseLock();
-      process.kill();
+      childProcess.kill();
     }
   }
 
   async listSessions(): Promise<SessionInfo[]> {
     await this.ensureClaudePath();
     try {
-      const command = new Deno.Command(this.claudePath, {
-        args: ["--list-sessions"],
+      const childProcess = Bun.spawn([this.claudePath, "--list-sessions"], {
         env: {
-          ...Deno.env.toObject(),
+          ...process.env,
           ANTHROPIC_API_KEY: this.config.apiKey!,
         },
-        stdout: "piped",
-        stderr: "piped",
+        stdout: "pipe",
+        stderr: "pipe",
       });
 
-      const { success, stdout } = await command.output();
+      const output = await new Response(childProcess.stdout).text();
+      await childProcess.exited;
 
-      if (!success) {
+      if (childProcess.exitCode !== 0) {
         throw new SessionError("Failed to list sessions");
       }
-
-      const output = new TextDecoder().decode(stdout);
 
       try {
         return JSON.parse(output);

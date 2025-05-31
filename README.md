@@ -4,7 +4,6 @@
 
 **A powerful TypeScript wrapper for the Claude Code CLI**
 
-[![Deno](https://img.shields.io/badge/Built%20for-Deno-black?style=flat&logo=deno)](https://deno.land)
 [![npm](https://img.shields.io/badge/Available%20on-npm-red?style=flat&logo=npm)](https://npmjs.com)
 [![TypeScript](https://img.shields.io/badge/Written%20in-TypeScript-blue?style=flat&logo=typescript)](https://typescriptlang.org)
 [![MIT License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
@@ -19,8 +18,7 @@
 
 ## ✨ Features
 
-- 🦕 **Deno First** — Built for Deno with complete TypeScript support
-- 📦 **Dual Runtime** — Works seamlessly with both Deno and Node.js/npm
+- 📦 **Node.js/npm** — Built for Node.js with complete TypeScript support
 - 🌊 **Streaming Support** — Real-time response streaming for interactive experiences
 - 🎯 **Type Safe** — Full TypeScript definitions with excellent IntelliSense
 - ⚡ **Performance Focused** — Efficient command execution with timeout handling
@@ -31,18 +29,6 @@
 
 ### Installation
 
-<details>
-<summary><strong>📦 Deno (Recommended)</strong></summary>
-
-```typescript
-import { ClaudeCodeClient } from "https://deno.land/x/claude_code_sdk/mod.ts";
-```
-
-</details>
-
-<details>
-<summary><strong>📋 Node.js/npm</strong></summary>
-
 ```bash
 npm install claude-code-sdk
 ```
@@ -50,8 +36,6 @@ npm install claude-code-sdk
 ```typescript
 import { ClaudeCodeClient } from "claude-code-sdk";
 ```
-
-</details>
 
 ### Prerequisites
 
@@ -210,39 +194,29 @@ interface SessionInfo {
 
 ```bash
 # Basic example
-deno run --allow-all examples/basic.ts
+npx tsx examples/basic.ts
 
 # Streaming example  
-deno run --allow-all examples/streaming.ts
+npx tsx examples/streaming.ts
 ```
 
 ### Testing
 
 ```bash
 # Run all tests
-deno test --allow-all
+npm test
 
 # Run tests with coverage
-deno test --allow-all --coverage
-```
-
-### Building for npm
-
-```bash
-# Build npm package
-deno run --allow-all scripts/build.ts
-
-# Test npm build
-cd npm && npm test
+npm run test:coverage
 ```
 
 ### Available Tasks
 
 ```bash
-deno task dev      # Start development server
-deno task test     # Run tests
-deno task build    # Build for production
-deno task publish  # Publish to registry
+npm run dev        # Start development server
+npm test           # Run tests
+npm run build      # Build for production
+npm run publish    # Publish to registry
 ```
 
 ## 🤝 Contributing
@@ -253,7 +227,7 @@ We welcome contributions! Please follow these steps:
 2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
 3. **Make** your changes with proper TypeScript types
 4. **Add** tests for new functionality
-5. **Ensure** all tests pass (`deno test --allow-all`)
+5. **Ensure** all tests pass (`npm test`)
 6. **Commit** your changes (`git commit -m 'Add amazing feature'`)
 7. **Push** to the branch (`git push origin feature/amazing-feature`)
 8. **Open** a Pull Request
@@ -266,7 +240,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 - 📚 [Claude Code Documentation](https://docs.claude.ai/en/docs/claude-code)
 - 💻 [GitHub Repository](https://github.com/your-org/claude-code-sdk-ts)
-- 🦕 [Deno Land Package](https://deno.land/x/claude_code_sdk)
+- 📦 [npm Package](https://npmjs.com/package/claude-code-sdk)
 
 ---
 

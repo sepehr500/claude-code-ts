@@ -1,6 +1,6 @@
-#!/usr/bin/env -S deno run --allow-env --allow-run
+#!/usr/bin/env bun
 
-import { ClaudeCodeClient } from "../mod.ts";
+import { ClaudeCodeClient } from "../mod";
 
 const client = new ClaudeCodeClient();
 
@@ -8,8 +8,7 @@ try {
   console.log("🌊 Starting streaming conversation...");
   
   const stream = client.chatStream({
-    prompt: "Explain how async/await works in TypeScript with examples",
-    nonInteractive: true,
+    text: "Explain how async/await works in TypeScript with examples",
   });
 
   for await (const chunk of stream) {
@@ -21,6 +20,6 @@ try {
   }
 
 } catch (error) {
-  console.error("❌ Streaming error:", error.message);
-  Deno.exit(1);
+  console.error("❌ Streaming error:", (error as Error).message);
+  process.exit(1);
 }

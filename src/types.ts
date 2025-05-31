@@ -39,4 +39,3 @@ export interface SessionInfo {
   lastActive: string;
   messageCount: number;
 }
-

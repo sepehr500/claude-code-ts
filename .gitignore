@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+npm/
+
+# Build outputs
+dist/
+*.tsbuildinfo
+
+# Runtime and environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+
+# Package manager files
+package-lock.json
+yarn.lock
+bun.lockb
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
