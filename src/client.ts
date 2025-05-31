@@ -56,30 +56,43 @@ export class ClaudeCodeClient {
     );
   }
 
-  private buildCommand(options: { text: string; sessionId?: string }): {
+  private buildCommand(options: {
+    text: string;
+    sessionId?: string;
+    configOverrides?: Partial<ClaudeCodeConfig>;
+  }): {
     command: string;
     args: string[];
   } {
     const args = ["-p", `"${options.text}"`];
 
-    if (this.config.outputFormat) {
-      args.push("--output-format", this.config.outputFormat);
+    // Use config overrides if provided, otherwise use the instance config
+    const effectiveConfig = {
+      ...this.config,
+      ...(options.configOverrides || {}),
+    };
+
+    if (effectiveConfig.outputFormat) {
+      args.push("--output-format", effectiveConfig.outputFormat);
     }
 
-    if (this.config.systemPrompt) {
-      args.push("--system-prompt", this.config.systemPrompt);
+    if (effectiveConfig.systemPrompt) {
+      args.push("--system-prompt", effectiveConfig.systemPrompt);
     }
 
-    if (this.config.allowedTools) {
-      args.push("--allowedTools", this.config.allowedTools.join(","));
+    if (effectiveConfig.allowedTools) {
+      args.push("--allowedTools", effectiveConfig.allowedTools.join(","));
     }
 
-    if (this.config.mcpConfig) {
-      args.push("--mcp-config", this.config.mcpConfig);
+    if (effectiveConfig.mcpConfig) {
+      args.push("--mcp-config", effectiveConfig.mcpConfig);
     }
 
-    if (this.config.permissionPromptTool) {
-      args.push("--permission-prompt-tool", this.config.permissionPromptTool);
+    if (effectiveConfig.permissionPromptTool) {
+      args.push(
+        "--permission-prompt-tool",
+        effectiveConfig.permissionPromptTool,
+      );
     }
 
     if (options.sessionId) {
@@ -160,12 +173,11 @@ export class ClaudeCodeClient {
     sessionId?: string;
   }): AsyncIterableIterator<StreamingResponse> {
     await this.ensureClaudePath();
-    const streamingOptions = {
-      ...options,
-    };
 
-    const { command: claudeCommand, args } =
-      this.buildCommand(streamingOptions);
+    const { command: claudeCommand, args } = this.buildCommand({
+      ...options,
+      configOverrides: { outputFormat: "streaming-json" },
+    });
 
     const childProcess = Bun.spawn([claudeCommand, ...args], {
       env: {
@@ -173,7 +185,7 @@ export class ClaudeCodeClient {
         ANTHROPIC_API_KEY: this.config.apiKey!,
       },
       stdout: "pipe",
-      stderr: "pipe",
+      stderr: "inherit",
     });
 
     const reader = childProcess.stdout.getReader();
@@ -182,6 +194,7 @@ export class ClaudeCodeClient {
     try {
       while (true) {
         const { done, value } = await reader.read();
+        console.log({ done, value });
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });

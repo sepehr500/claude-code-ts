@@ -1,5 +1,5 @@
 {
-  "name": "@anthropic/claude-code-sdk",
+  "name": "claude-code-ts",
   "version": "0.1.0",
   "description": "TypeScript SDK wrapper for Claude Code",
   "main": "./dist/mod.js",
@@ -12,14 +12,14 @@
     }
   },
   "scripts": {
-    "build": "bun build",
+    "build": "bun build mod.ts --outdir dist --target node && tsc --declaration --emitDeclarationOnly --outDir dist",
     "test": "bun test",
     "dev": "bun --watch mod.ts",
     "prepublishOnly": "bun run build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/anthropics/claude-code-sdk-ts.git"
+  "url": "git+https://github.com/ssobhani/ClaudeCodeTS.git"
   },
   "keywords": [
     "claude",
@@ -29,7 +29,7 @@
     "typescript",
     "bun"
   ],
-  "author": "Anthropic",
+  "author": "ssobhani",
   "license": "MIT",
   "engines": {
     "bun": ">=1.0.0"
