@@ -1,0 +1,41 @@
+{
+  "name": "@anthropic/claude-code-sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK wrapper for Claude Code",
+  "main": "./esm/mod.js",
+  "module": "./esm/mod.js",
+  "types": "./esm/mod.d.ts",
+  "exports": {
+    ".": {
+      "import": "./esm/mod.js",
+      "require": "./script/mod.js",
+      "types": "./esm/mod.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "deno run --allow-all scripts/build.ts",
+    "test": "npm run build && cd npm && npm test",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anthropics/claude-code-sdk-ts.git"
+  },
+  "keywords": [
+    "claude",
+    "anthropic",
+    "ai",
+    "sdk",
+    "typescript",
+    "deno"
+  ],
+  "author": "Anthropic",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

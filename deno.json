@@ -1,0 +1,20 @@
+{
+  "name": "@anthropic/claude-code-sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK wrapper for Claude Code",
+  "exports": {
+    ".": "./mod.ts"
+  },
+  "tasks": {
+    "dev": "deno run --allow-all --watch mod.ts",
+    "test": "deno test --allow-all",
+    "build": "deno run --allow-all scripts/build.ts",
+    "npm:build": "deno run --allow-read --allow-write --allow-net jsr:@deno/dnt@0.41.1",
+    "publish": "deno publish"
+  },
+  "compilerOptions": {
+    "strict": true,
+    "lib": ["deno.ns", "dom", "es2022"]
+  },
+  "exclude": ["build/", "npm/"]
+}
