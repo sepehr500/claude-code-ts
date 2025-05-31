@@ -1,59 +1,87 @@
-# Claude Code SDK for TypeScript
+<div align="center">
 
-A TypeScript wrapper around the Claude Code CLI that works with both Deno and Node.js/npm.
+# 🤖 Claude Code SDK for TypeScript
 
-## Features
+**A powerful TypeScript wrapper for the Claude Code CLI**
 
-- 🦕 **Deno First**: Built for Deno with full TypeScript support
-- 📦 **Dual Publishing**: Available for both Deno and npm
-- 🔄 **Streaming Support**: Real-time response streaming
-- 🎯 **Type Safe**: Full TypeScript definitions
-- 🛠️ **Flexible API**: Support for all Claude Code CLI features
+[![Deno](https://img.shields.io/badge/Built%20for-Deno-black?style=flat&logo=deno)](https://deno.land)
+[![npm](https://img.shields.io/badge/Available%20on-npm-red?style=flat&logo=npm)](https://npmjs.com)
+[![TypeScript](https://img.shields.io/badge/Written%20in-TypeScript-blue?style=flat&logo=typescript)](https://typescriptlang.org)
+[![MIT License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
 
-## Installation
+*Seamlessly integrate Claude Code's powerful AI capabilities into your TypeScript applications*
 
-### Deno
+[📚 Documentation](#api-reference) • [🚀 Quick Start](#quick-start) • [💡 Examples](#examples) • [🔧 Development](#development)
+
+</div>
+
+---
+
+## ✨ Features
+
+- 🦕 **Deno First** — Built for Deno with complete TypeScript support
+- 📦 **Dual Runtime** — Works seamlessly with both Deno and Node.js/npm
+- 🌊 **Streaming Support** — Real-time response streaming for interactive experiences
+- 🎯 **Type Safe** — Full TypeScript definitions with excellent IntelliSense
+- ⚡ **Performance Focused** — Efficient command execution with timeout handling
+- 🛠️ **Flexible Configuration** — Support for all Claude Code CLI features
+- 🔐 **Secure** — Proper environment variable handling for API keys
+
+## 🚀 Quick Start
+
+### Installation
+
+<details>
+<summary><strong>📦 Deno (Recommended)</strong></summary>
 
 ```typescript
 import { ClaudeCodeClient } from "https://deno.land/x/claude_code_sdk/mod.ts";
 ```
 
-### Node.js/npm
+</details>
+
+<details>
+<summary><strong>📋 Node.js/npm</strong></summary>
 
 ```bash
-npm install @anthropic/claude-code-sdk
+npm install claude-code-sdk
 ```
 
 ```typescript
-import { ClaudeCodeClient } from "@anthropic/claude-code-sdk";
+import { ClaudeCodeClient } from "claude-code-sdk";
 ```
 
-## Prerequisites
+</details>
 
-You need to have the Claude Code CLI installed and an Anthropic API key:
+### Prerequisites
 
-1. Install Claude Code CLI (follow the [official documentation](https://docs.anthropic.com/en/docs/claude-code))
-2. Set your API key: `export ANTHROPIC_API_KEY=your_api_key`
+Before using this SDK, ensure you have:
 
-## Quick Start
+1. **Claude Code CLI** installed ([installation guide](https://docs.claude.ai/en/docs/claude-code))
+2. **API key** set as environment variable:
+   ```bash
+   export ANTHROPIC_API_KEY=your_api_key_here
+   ```
 
 ### Basic Usage
 
 ```typescript
-import { ClaudeCodeClient } from "@anthropic/claude-code-sdk";
+import { ClaudeCodeClient } from "claude-code-sdk";
 
+// Initialize client
 const client = new ClaudeCodeClient();
 
-// Simple prompt
-const response = await client.prompt("Write a Fibonacci function in TypeScript");
-console.log(response.content);
+// Send a message to Claude
+const response = await client.chat({
+  text: "Write a TypeScript function to calculate Fibonacci numbers"
+});
 
-// Continue conversation
-const followUp = await client.continue("Now optimize it for performance");
-console.log(followUp.content);
+console.log(response.content);
 ```
 
-### Configuration
+## 💡 Examples
+
+### 🔧 Configuration
 
 ```typescript
 const client = new ClaudeCodeClient({
@@ -61,36 +89,63 @@ const client = new ClaudeCodeClient({
   outputFormat: "json",
   systemPrompt: "You are a senior TypeScript developer",
   allowedTools: ["bash", "edit", "read"],
+  claudePath: "/custom/path/to/claude" // Optional
 });
 ```
 
-### Streaming Responses
+### 🌊 Streaming Responses
 
 ```typescript
 const stream = client.chatStream({
-  prompt: "Explain async/await in TypeScript",
-  nonInteractive: true,
+  text: "Explain async/await in TypeScript with examples"
 });
 
 for await (const chunk of stream) {
   if (chunk.type === "content") {
     process.stdout.write(chunk.data as string);
+  } else if (chunk.type === "metadata") {
+    console.log("📊 Metadata:", chunk.data);
   }
 }
 ```
 
-### Session Management
+### 📋 Session Management
 
 ```typescript
-// Resume a specific session
-const response = await client.resume("session-id", "Continue where we left off");
+// Start a conversation
+const response1 = await client.chat({
+  text: "Create a React component"
+});
+
+// Continue with the same session
+const response2 = await client.chat({
+  text: "Now add TypeScript types to it",
+  sessionId: response1.sessionId
+});
 
 // List all sessions
 const sessions = await client.listSessions();
-console.log(sessions);
+console.log("Active sessions:", sessions);
 ```
 
-## API Reference
+### ⚙️ Advanced Configuration
+
+```typescript
+const client = new ClaudeCodeClient({
+  outputFormat: "json",
+  systemPrompt: "You are an expert in modern web development",
+  allowedTools: ["bash", "edit", "read", "write"],
+  mcpConfig: "/path/to/mcp-config.json",
+  permissionPromptTool: "always"
+});
+
+// Update configuration dynamically
+client.updateConfig({
+  systemPrompt: "You are now a Python expert"
+});
+```
+
+## 📖 API Reference
 
 ### ClaudeCodeClient
 
@@ -102,80 +157,123 @@ new ClaudeCodeClient(config?: ClaudeCodeConfig)
 
 #### Methods
 
-- `prompt(text: string): Promise<ClaudeCodeResponse>` - Send a single prompt
-- `continue(text: string): Promise<ClaudeCodeResponse>` - Continue last conversation
-- `resume(sessionId: string, text: string): Promise<ClaudeCodeResponse>` - Resume specific session
-- `chat(options: ConversationOptions): Promise<ClaudeCodeResponse>` - Full conversation control
-- `chatStream(options: ConversationOptions): AsyncIterableIterator<StreamingResponse>` - Streaming responses
-- `listSessions(): Promise<SessionInfo[]>` - List all sessions
-- `updateConfig(config: Partial<ClaudeCodeConfig>): void` - Update configuration
+| Method | Description | Returns |
+|--------|-------------|---------|
+| `chat(options)` | Send a message to Claude | `Promise<ClaudeCodeResponse>` |
+| `chatStream(options)` | Stream responses from Claude | `AsyncIterableIterator<StreamingResponse>` |
+| `listSessions()` | Get all available sessions | `Promise<SessionInfo[]>` |
+| `updateConfig(config)` | Update client configuration | `void` |
 
-### Types
+#### Type Definitions
 
 ```typescript
 interface ClaudeCodeConfig {
-  apiKey?: string;
-  systemPrompt?: string;
+  apiKey?: string;                           // API key (optional if env var set)
+  claudePath?: string;                       // Custom path to Claude CLI
+  systemPrompt?: string;                     // System prompt for conversations
   outputFormat?: "text" | "json" | "streaming-json";
-  allowedTools?: string[];
-  mcpConfig?: string;
-  permissionPromptTool?: string;
-}
-
-interface ConversationOptions {
-  prompt: string;
-  sessionId?: string;
-  continueLastSession?: boolean;
-  nonInteractive?: boolean;
+  allowedTools?: string[];                   // Tools Claude can use
+  mcpConfig?: string;                        // MCP configuration file path
+  permissionPromptTool?: string;            // Permission prompt behavior
 }
 
 interface ClaudeCodeResponse {
-  content: string;
-  sessionId?: string;
+  content: string;                          // Main response content
+  sessionId?: string;                       // Session identifier
+  type?: string;                           // Response type
+  cost_usd?: number;                       // Cost in USD
+  duration_ms?: number;                    // Response duration
+  num_turns?: number;                      // Number of conversation turns
   metadata?: {
-    toolsUsed?: string[];
-    tokensUsed?: number;
-    timestamp?: string;
+    toolsUsed?: string[];                  // Tools used in response
+    tokensUsed?: number;                   // Tokens consumed
+    timestamp?: string;                    // Response timestamp
   };
+}
+
+interface StreamingResponse {
+  type: "content" | "metadata" | "error";   // Chunk type
+  data: string | object;                    // Chunk data
+}
+
+interface SessionInfo {
+  id: string;                              // Session ID
+  createdAt: string;                       // Creation timestamp
+  lastActive: string;                      // Last activity timestamp
+  messageCount: number;                    // Number of messages
 }
 ```
 
-## Development
+## 🔧 Development
 
-### For Deno
+### Running Examples
 
 ```bash
-# Run tests
-deno test --allow-all
-
-# Run examples
+# Basic example
 deno run --allow-all examples/basic.ts
+
+# Streaming example  
+deno run --allow-all examples/streaming.ts
 ```
 
-### For npm
+### Testing
 
 ```bash
-# Build for npm
+# Run all tests
+deno test --allow-all
+
+# Run tests with coverage
+deno test --allow-all --coverage
+```
+
+### Building for npm
+
+```bash
+# Build npm package
 deno run --allow-all scripts/build.ts
 
 # Test npm build
 cd npm && npm test
 ```
 
-## Contributing
+### Available Tasks
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+```bash
+deno task dev      # Start development server
+deno task test     # Run tests
+deno task build    # Build for production
+deno task publish  # Publish to registry
+```
 
-## License
+## 🤝 Contributing
 
-MIT License - see [LICENSE](LICENSE) for details.
+We welcome contributions! Please follow these steps:
 
-## Links
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Make** your changes with proper TypeScript types
+4. **Add** tests for new functionality
+5. **Ensure** all tests pass (`deno test --allow-all`)
+6. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+7. **Push** to the branch (`git push origin feature/amazing-feature`)
+8. **Open** a Pull Request
 
-- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
-- [Anthropic Console](https://console.anthropic.com/)
-- [GitHub Repository](https://github.com/anthropics/claude-code-sdk-ts)# claude-code-ts
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+## 🔗 Links
+
+- 📚 [Claude Code Documentation](https://docs.claude.ai/en/docs/claude-code)
+- 💻 [GitHub Repository](https://github.com/your-org/claude-code-sdk-ts)
+- 🦕 [Deno Land Package](https://deno.land/x/claude_code_sdk)
+
+---
+
+<div align="center">
+
+**Made with ❤️ for the developer community**
+
+*Empowering developers to build amazing AI-powered applications*
+
+</div>

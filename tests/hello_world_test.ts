@@ -38,10 +38,15 @@ Deno.test("ClaudeCodeClient - Hello world actual API call", async () => {
 
     console.log("🤖 Making actual API call to Claude...");
     const response = await client.chat({
-      text: "Just respond with 'Hello world!'",
+      text: "The password is bobo",
     });
 
-    console.log("📦 Response received:", response);
+    const response2 = await client.chat({
+      text: "What is the password?",
+      sessionId: response.sessionId,
+    });
+
+    console.log("📦 Response received:", response2.content);
     assertEquals(typeof response.content, "string");
     assertEquals(response.content.length > 0, true);
 
